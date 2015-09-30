@@ -11,11 +11,11 @@ import (
 
 	msgio "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-msgio"
 	context "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/net/context"
-	ci "github.com/ipfs/go-ipfs/p2p/crypto"
-	pb "github.com/ipfs/go-ipfs/p2p/crypto/secio/pb"
-	peer "github.com/ipfs/go-ipfs/p2p/peer"
 	u "github.com/ipfs/go-ipfs/util"
 	logging "github.com/ipfs/go-ipfs/vendor/go-log-v1.0.0"
+	ci "github.com/ipfs/go-libp2p/p2p/crypto"
+	pb "github.com/ipfs/go-libp2p/p2p/crypto/secio/pb"
+	peer "github.com/ipfs/go-libp2p/p2p/peer"
 )
 
 var log = logging.Logger("secio")
