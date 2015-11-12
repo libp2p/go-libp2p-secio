@@ -13,7 +13,7 @@ import (
 	"crypto/sha512"
 	"hash"
 
-	bfish "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/crypto/blowfish"
+	bfish "golang.org/x/crypto/blowfish"
 	ci "github.com/ipfs/go-libp2p/p2p/crypto"
 )
 

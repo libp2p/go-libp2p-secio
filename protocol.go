@@ -9,13 +9,13 @@ import (
 	"sync"
 	"time"
 
-	msgio "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-msgio"
-	context "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/net/context"
-	u "github.com/ipfs/go-ipfs/util"
-	logging "github.com/ipfs/go-ipfs/vendor/go-log-v1.0.0"
+	msgio "github.com/jbenet/go-msgio"
+	context "golang.org/x/net/context"
 	ci "github.com/ipfs/go-libp2p/p2p/crypto"
 	pb "github.com/ipfs/go-libp2p/p2p/crypto/secio/pb"
 	peer "github.com/ipfs/go-libp2p/p2p/peer"
+	u "util"
+	logging "QmWRypnfEwrgH4k93KEHN5hng7VjKYkWmzDYRuTZeh2Mgh/go-log"
 )
 
 var log = logging.Logger("secio")

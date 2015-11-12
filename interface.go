@@ -6,8 +6,8 @@ import (
 
 	ci "github.com/ipfs/go-libp2p/p2p/crypto"
 
-	msgio "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-msgio"
-	context "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/net/context"
+	msgio "github.com/jbenet/go-msgio"
+	context "golang.org/x/net/context"
 	peer "github.com/ipfs/go-libp2p/p2p/peer"
 )
 
