@@ -9,10 +9,10 @@ import (
 
 	"crypto/hmac"
 
+	context "QmacZi9WygGK7Me8mH53pypyscHzU386aUZXpr28GZgUct/context"
 	proto "QmfH4HuZyN1p2wQLWWkXC91Z76435xKrBVfLQ2MY8ayG5R/gogo-protobuf/proto"
 	msgio "github.com/jbenet/go-msgio"
 	mpool "github.com/jbenet/go-msgio/mpool"
-	context "golang.org/x/net/context"
 )
 
 const MaxMsgSize = 8 * 1024 * 1024

@@ -6,9 +6,9 @@ import (
 
 	ci "github.com/ipfs/go-libp2p/p2p/crypto"
 
-	msgio "github.com/jbenet/go-msgio"
-	context "golang.org/x/net/context"
+	context "QmacZi9WygGK7Me8mH53pypyscHzU386aUZXpr28GZgUct/context"
 	peer "github.com/ipfs/go-libp2p/p2p/peer"
+	msgio "github.com/jbenet/go-msgio"
 )
 
 // SessionGenerator constructs secure communication sessions for a peer.
