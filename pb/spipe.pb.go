@@ -14,7 +14,7 @@ It has these top-level messages:
 */
 package spipe_pb
 
-import proto "github.com/gogo/protobuf/proto"
+import proto "QmfH4HuZyN1p2wQLWWkXC91Z76435xKrBVfLQ2MY8ayG5R/gogo-protobuf/proto"
 import math "math"
 
 // Reference imports to suppress errors if they are not otherwise used.
