@@ -9,10 +9,10 @@ import (
 
 	"crypto/hmac"
 
-	msgio "gx/ipfs/QmRQhVisS8dmPbjBUthVkenn81pBxrx1GxE281csJhm2vL/go-msgio"
-	mpool "gx/ipfs/QmRQhVisS8dmPbjBUthVkenn81pBxrx1GxE281csJhm2vL/go-msgio/mpool"
-	proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
-	context "gx/ipfs/QmZy2y8t9zQH2a1b8q2ZSLKp17ATuJoCNxxyMFG5qFExpt/go-net/context"
+	proto "github.com/gogo/protobuf/proto"
+	msgio "github.com/jbenet/go-msgio"
+	mpool "github.com/jbenet/go-msgio/mpool"
+	context "golang.org/x/net/context"
 )
 
 // ErrMACInvalid signals that a MAC verification failed

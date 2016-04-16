@@ -14,7 +14,7 @@ import (
 	"hash"
 
 	ci "github.com/ipfs/go-libp2p/p2p/crypto"
-	bfish "gx/ipfs/Qme1boxspcQWR8FBzMxeppqug2fYgYc15diNWmqgDVnvn2/go-crypto/blowfish"
+	bfish "golang.org/x/crypto/blowfish"
 )
 
 // List of supported ECDH curves
