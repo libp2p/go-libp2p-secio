@@ -10,9 +10,9 @@ import (
 	"time"
 
 	u "github.com/ipfs/go-ipfs-util"
-	ci "github.com/ipfs/go-libp2p/p2p/crypto"
-	pb "github.com/ipfs/go-libp2p/p2p/crypto/secio/pb"
-	peer "github.com/ipfs/go-libp2p/p2p/peer"
+	ci "github.com/ipfs/go-libp2p-crypto"
+	peer "github.com/ipfs/go-libp2p-peer"
+	pb "github.com/ipfs/go-libp2p-secio/pb"
 	logging "github.com/ipfs/go-log"
 	msgio "github.com/jbenet/go-msgio"
 	context "golang.org/x/net/context"

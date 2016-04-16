@@ -4,9 +4,9 @@ package secio
 import (
 	"io"
 
-	ci "github.com/ipfs/go-libp2p/p2p/crypto"
+	ci "github.com/ipfs/go-libp2p-crypto"
 
-	peer "github.com/ipfs/go-libp2p/p2p/peer"
+	peer "github.com/ipfs/go-libp2p-peer"
 	msgio "github.com/jbenet/go-msgio"
 	context "golang.org/x/net/context"
 )
