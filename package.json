@@ -45,14 +45,14 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmZpD74pUj6vuxTp1o6LhA3JavC2Bvh9fsWPPVvHnD9sE7",
+      "hash": "QmehcL7UPpGQs8qMF858aTN2c6BhPcY9xppLGt88RTuEio",
       "name": "go-libp2p-peer",
-      "version": "1.0.4"
+      "version": "1.0.5"
     }
   ],
   "gxVersion": "0.4.0",
   "language": "go",
   "license": "MIT",
   "name": "go-libp2p-secio",
-  "version": "1.0.2"
+  "version": "1.0.3"
 }
