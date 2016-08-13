@@ -2,6 +2,7 @@ package secio
 
 import (
 	"crypto/cipher"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -24,17 +25,17 @@ var bufPool = mpool.ByteSlicePool
 
 type etmWriter struct {
 	// params
-	pool mpool.Pool        // for the buffers with encrypted data
-	msg  msgio.WriteCloser // msgio for knowing where boundaries lie
-	str  cipher.Stream     // the stream cipher to encrypt with
-	mac  HMAC              // the mac to authenticate data with
+	pool mpool.Pool    // for the buffers with encrypted data
+	str  cipher.Stream // the stream cipher to encrypt with
+	mac  HMAC          // the mac to authenticate data with
+	w    io.Writer
 
 	sync.Mutex
 }
 
 // NewETMWriter Encrypt-Then-MAC
 func NewETMWriter(w io.Writer, s cipher.Stream, mac HMAC) msgio.WriteCloser {
-	return &etmWriter{msg: msgio.NewWriter(w), str: s, mac: mac, pool: bufPool}
+	return &etmWriter{w: w, str: s, mac: mac, pool: bufPool}
 }
 
 // Write writes passed in buffer as a single message.
@@ -50,9 +51,10 @@ func (w *etmWriter) WriteMsg(b []byte) error {
 	w.Lock()
 	defer w.Unlock()
 
+	bufsize := uint32(4 + len(b) + w.mac.Size())
 	// encrypt.
-	data := w.pool.Get(uint32(len(b))).([]byte)
-	data = data[:len(b)] // the pool's buffer may be larger
+	buf := w.pool.Get(bufsize).([]byte)
+	data := buf[4 : 4+len(b)] // the pool's buffer may be larger
 	w.str.XORKeyStream(data, b)
 
 	// log.Debugf("ENC plaintext (%d): %s %v", len(b), b, b)
@@ -66,15 +68,18 @@ func (w *etmWriter) WriteMsg(b []byte) error {
 	// Sum appends.
 	data = w.mac.Sum(data)
 	w.mac.Reset()
-	// it's sad to append here. our buffers are -- hopefully -- coming from
-	// a shared buffer pool, so the append may not actually cause allocation
-	// one can only hope. i guess we'll see.
+	binary.BigEndian.PutUint32(buf[:4], uint32(len(data)))
 
-	return w.msg.WriteMsg(data)
+	_, err := w.w.Write(buf[:bufsize])
+	w.pool.Put(bufsize, buf)
+	return err
 }
 
 func (w *etmWriter) Close() error {
-	return w.msg.Close()
+	if c, ok := w.w.(io.Closer); ok {
+		return c.Close()
+	}
+	return nil
 }
 
 type etmReader struct {
