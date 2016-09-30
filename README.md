@@ -22,7 +22,7 @@ TODO
 
 ## Contribute
 
-Feel free to join in. All welcome. Open an [issue](https://github.com/ipfs/go-libp2p-secio/issues)!
+Feel free to join in. All welcome. Open an [issue](https://github.com/libp2p/go-libp2p-secio/issues)!
 
 This repository falls under the IPFS [Code of Conduct](https://github.com/ipfs/community/blob/master/code-of-conduct.md).
 
