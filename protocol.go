@@ -2,6 +2,7 @@ package secio
 
 import (
 	"bytes"
+	"context"
 	"crypto/rand"
 	"errors"
 	"fmt"
@@ -10,12 +11,11 @@ import (
 	"time"
 
 	u "github.com/ipfs/go-ipfs-util"
-	ci "github.com/ipfs/go-libp2p-crypto"
-	peer "github.com/ipfs/go-libp2p-peer"
-	pb "github.com/ipfs/go-libp2p-secio/pb"
 	logging "github.com/ipfs/go-log"
 	msgio "github.com/jbenet/go-msgio"
-	context "golang.org/x/net/context"
+	ci "github.com/libp2p/go-libp2p-crypto"
+	peer "github.com/libp2p/go-libp2p-peer"
+	pb "github.com/libp2p/go-libp2p-secio/pb"
 )
 
 var log = logging.Logger("secio")

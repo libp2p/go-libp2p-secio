@@ -2,13 +2,12 @@
 package secio
 
 import (
+	"context"
 	"io"
 
-	ci "github.com/ipfs/go-libp2p-crypto"
-
-	peer "github.com/ipfs/go-libp2p-peer"
 	msgio "github.com/jbenet/go-msgio"
-	context "golang.org/x/net/context"
+	ci "github.com/libp2p/go-libp2p-crypto"
+	peer "github.com/libp2p/go-libp2p-peer"
 )
 
 // SessionGenerator constructs secure communication sessions for a peer.

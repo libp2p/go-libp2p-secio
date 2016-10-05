@@ -1,19 +1,18 @@
 package secio
 
 import (
+	"context"
 	"crypto/cipher"
+	"crypto/hmac"
 	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
 	"sync"
 
-	"crypto/hmac"
-
 	proto "github.com/gogo/protobuf/proto"
 	msgio "github.com/jbenet/go-msgio"
 	mpool "github.com/jbenet/go-msgio/mpool"
-	context "golang.org/x/net/context"
 )
 
 // ErrMACInvalid signals that a MAC verification failed
