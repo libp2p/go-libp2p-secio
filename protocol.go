@@ -44,6 +44,8 @@ type secureSession struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
+	preSharedKey []byte
+
 	secure    msgio.ReadWriteCloser
 	insecure  io.ReadWriteCloser
 	insecureM msgio.ReadWriter
@@ -70,8 +72,8 @@ func (s *secureSession) Loggable() map[string]interface{} {
 	return m
 }
 
-func newSecureSession(ctx context.Context, local peer.ID, key ci.PrivKey, insecure io.ReadWriteCloser) (*secureSession, error) {
-	s := &secureSession{localPeer: local, localKey: key}
+func newSecureSession(ctx context.Context, local peer.ID, key ci.PrivKey, psk []byte, insecure io.ReadWriteCloser) (*secureSession, error) {
+	s := &secureSession{localPeer: local, localKey: key, preSharedKey: psk}
 	s.ctx, s.cancel = context.WithCancel(ctx)
 
 	switch {
@@ -279,6 +281,10 @@ func (s *secureSession) runHandshake() error {
 		return err
 	}
 
+	if len(s.preSharedKey) == 0 {
+		// add pre shared symetric key to the genenrated shared key
+		s.sharedSecret = append(s.sharedSecret, s.preSharedKey...)
+	}
 	// generate two sets of keys (stretching)
 	k1, k2 := ci.KeyStretcher(s.local.cipherT, s.local.hashT, s.sharedSecret)
 

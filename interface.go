@@ -12,8 +12,9 @@ import (
 
 // SessionGenerator constructs secure communication sessions for a peer.
 type SessionGenerator struct {
-	LocalID    peer.ID
-	PrivateKey ci.PrivKey
+	LocalID      peer.ID
+	PrivateKey   ci.PrivKey
+	PreSharedKey []byte
 }
 
 // NewSession takes an insecure io.ReadWriter, sets up a TLS-like
@@ -22,7 +23,7 @@ type SessionGenerator struct {
 // See the source for the protocol details and security implementation.
 // The provided Context is only needed for the duration of this function.
 func (sg *SessionGenerator) NewSession(ctx context.Context, insecure io.ReadWriteCloser) (Session, error) {
-	return newSecureSession(ctx, sg.LocalID, sg.PrivateKey, insecure)
+	return newSecureSession(ctx, sg.LocalID, sg.PrivateKey, sg.PreSharedKey, insecure)
 }
 
 type Session interface {
