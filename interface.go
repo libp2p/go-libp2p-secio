@@ -82,7 +82,6 @@ func (s *secureSession) RemotePublicKey() ci.PubKey {
 
 // Close closes the secure session
 func (s *secureSession) Close() error {
-	s.cancel()
 	s.handshakeMu.Lock()
 	defer s.handshakeMu.Unlock()
 	if s.secure == nil {
