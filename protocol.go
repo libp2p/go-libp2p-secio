@@ -41,8 +41,7 @@ const nonceSize = 16
 // secureSession encapsulates all the parameters needed for encrypting
 // and decrypting traffic from an insecure channel.
 type secureSession struct {
-	ctx    context.Context
-	cancel context.CancelFunc
+	ctx context.Context
 
 	secure    msgio.ReadWriteCloser
 	insecure  io.ReadWriteCloser
@@ -72,7 +71,6 @@ func (s *secureSession) Loggable() map[string]interface{} {
 
 func newSecureSession(ctx context.Context, local peer.ID, key ci.PrivKey, insecure io.ReadWriteCloser) (*secureSession, error) {
 	s := &secureSession{localPeer: local, localKey: key}
-	s.ctx, s.cancel = context.WithCancel(ctx)
 
 	switch {
 	case s.localPeer == "":
@@ -110,6 +108,7 @@ func (s *secureSession) Handshake() error {
 // keys, IDs, and initiate communication, assigning all necessary params.
 // requires the duplex channel to be a msgio.ReadWriter (for framed messaging)
 func (s *secureSession) runHandshake() error {
+	defer func() { s.ctx = nil }()                              // clear to save memory
 	ctx, cancel := context.WithTimeout(s.ctx, HandshakeTimeout) // remove
 	defer cancel()
 

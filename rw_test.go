@@ -82,4 +82,6 @@ func TestBasicETMStream(t *testing.T) {
 	if string(before) != string(msg) {
 		t.Fatal("got wrong message")
 	}
+
+	r.Close()
 }
