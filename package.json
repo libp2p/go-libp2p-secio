@@ -15,9 +15,9 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "Qmb912gdngC1UWwTkhuW8knyRbcWeu5kqkxBpveLmW8bSr",
+      "hash": "QmZuY8aV7zbNXVy6DyN9SmnuH3o9nG852F4aTiSBpts8d1",
       "name": "go-ipfs-util",
-      "version": "1.2.0"
+      "version": "1.2.1"
     },
     {
       "author": "whyrusleeping",
@@ -33,15 +33,15 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmfWDLQjGjVe4fr5CoztYW2DYYjRysMJrFe1RCsXLPTf46",
+      "hash": "QmTuX6VtWTbWgPwd5PMXHyp411RKsW5nBqLKVVRfJMNneb",
       "name": "go-libp2p-crypto",
-      "version": "1.3.1"
+      "version": "1.3.3"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmfMmLGoKzCHDN7cGgk64PJr4iipzidDRME8HABSJqvmhC",
+      "hash": "QmQ1FYwmfL2jSvLKeXd6i47cSS23bWVMGqGxeh9nv8xwry",
       "name": "go-libp2p-peer",
-      "version": "2.1.0"
+      "version": "2.1.1"
     }
   ],
   "gxVersion": "0.4.0",
