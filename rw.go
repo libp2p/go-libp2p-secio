@@ -10,9 +10,9 @@ import (
 	"io"
 	"sync"
 
-	proto "github.com/gogo/protobuf/proto"
-	msgio "github.com/jbenet/go-msgio"
-	mpool "github.com/jbenet/go-msgio/mpool"
+	msgio "gx/ipfs/QmRQhVisS8dmPbjBUthVkenn81pBxrx1GxE281csJhm2vL/go-msgio"
+	mpool "gx/ipfs/QmRQhVisS8dmPbjBUthVkenn81pBxrx1GxE281csJhm2vL/go-msgio/mpool"
+	proto "gx/ipfs/QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV/gogo-protobuf/proto"
 )
 
 // ErrMACInvalid signals that a MAC verification failed

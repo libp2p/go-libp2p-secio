@@ -5,9 +5,9 @@ import (
 	"context"
 	"io"
 
-	msgio "github.com/jbenet/go-msgio"
-	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
+	msgio "gx/ipfs/QmRQhVisS8dmPbjBUthVkenn81pBxrx1GxE281csJhm2vL/go-msgio"
+	ci "gx/ipfs/QmTuX6VtWTbWgPwd5PMXHyp411RKsW5nBqLKVVRfJMNneb/go-libp2p-crypto"
+	peer "gx/ipfs/QmbKtZxyDqUJp7Ad8tGr5nrLqoi9nfgqFxcNbmLJbfaHPe/go-libp2p-peer"
 )
 
 // SessionGenerator constructs secure communication sessions for a peer.
