@@ -240,8 +240,8 @@ func (r *etmReader) macCheckThenDecrypt(m []byte) (int, error) {
 	return mark, nil
 }
 
-func (w *etmReader) Close() error {
-	return w.msg.Close()
+func (r *etmReader) Close() error {
+	return r.msg.Close()
 }
 
 // ReleaseMsg signals a buffer can be reused.
