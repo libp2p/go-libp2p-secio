@@ -10,15 +10,35 @@
 
 > go-libp2p's secio encrypted transport
 
+Package `secio` is used to encrypt `go-libp2p-conn` connections. Connections wrapped by `secio` use secure sessions provided by this package to encrypt all traffic. A TLS-like handshake is used to setup the communication channel.
+
 ## Install
 
+`go-libp2p-secio` is a standard Go module which can be installed with:
+
+```sh
+go get github.com/libp2p/go-libp2p-secio
 ```
-go get github.com/ipfs/go-libp2p-secio
-```
+
+Note that `go-libp2p-secio` is packaged with Gx, so it is recommended to use Gx to install and use it (see the Usage section).
 
 ## Usage
 
-TODO
+This module is packaged with [Gx](https://github.com/whyrusleeping/gx). In order to use it in your own project it is recommended that you:
+
+```sh
+go get -u github.com/whyrusleeping/gx
+go get -u github.com/whyrusleeping/gx-go
+cd <your-project-repository>
+gx init
+gx import github.com/multiformats/go-libp2p-secio
+gx install --global
+gx-go --rewrite
+```
+
+Please check [Gx](https://github.com/whyrusleeping/gx) and [Gx-go](https://github.com/whyrusleeping/gx-go) documentation for more information.
+
+For more information about how `go-libp2p-secio` is used in the libp2p context, you can see the [go-libp2p-conn](https://github.com/libp2p/go-libp2p-conn) module.
 
 ## Contribute
 

@@ -27,7 +27,7 @@ var ErrUnsupportedKeyType = errors.New("unsupported key type")
 var ErrClosed = errors.New("connection closed")
 
 // ErrEcho is returned when we're attempting to handshake with the same keys and nonces.
-var ErrEcho = errors.New("same keys and nonces. one side talking to self.")
+var ErrEcho = errors.New("same keys and nonces. one side talking to self")
 
 // HandshakeTimeout governs how long the handshake will be allowed to take place for.
 // Making this number large means there could be many bogus connections waiting to

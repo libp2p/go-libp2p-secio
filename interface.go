@@ -1,4 +1,4 @@
-// package secio handles establishing secure communication between two peers.
+// Package secio is used to encrypt `go-libp2p-conn` connections. Connections wrapped by secio use secure sessions provided by this package to encrypt all traffic. A TLS-like handshake is used to setup the communication channel.
 package secio
 
 import (
@@ -25,6 +25,8 @@ func (sg *SessionGenerator) NewSession(ctx context.Context, insecure io.ReadWrit
 	return newSecureSession(ctx, sg.LocalID, sg.PrivateKey, insecure)
 }
 
+// Session provides the necessary functionality to wrap a connection
+// and tunnel it through a secure channel via the provided ReadWriter.
 type Session interface {
 	// ReadWriter returns the encrypted communication channel
 	ReadWriter() msgio.ReadWriteCloser
@@ -46,7 +48,7 @@ type Session interface {
 	Close() error
 }
 
-// SecureReadWriter returns the encrypted communication channel
+// ReadWriter returns the encrypted communication channel
 func (s *secureSession) ReadWriter() msgio.ReadWriteCloser {
 	if err := s.Handshake(); err != nil {
 		return &closedRW{err}

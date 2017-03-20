@@ -17,15 +17,16 @@ import (
 	bfish "golang.org/x/crypto/blowfish"
 )
 
-// List of supported ECDH curves
+// SupportedExchanges is the list of supported ECDH curves
 var SupportedExchanges = "P-256,P-384,P-521"
 
-// List of supported Ciphers
+// SupportedCiphers is the list of supported Ciphers
 var SupportedCiphers = "AES-256,AES-128,Blowfish"
 
-// List of supported Hashes
+// SupportedHashes is the list of supported Hashes
 var SupportedHashes = "SHA256,SHA512"
 
+// HMAC carries a hash and its size
 type HMAC struct {
 	hash.Hash
 	size int
