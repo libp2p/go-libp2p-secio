@@ -10,12 +10,12 @@ import (
 	"sync"
 	"time"
 
-	u "github.com/ipfs/go-ipfs-util"
 	logging "github.com/ipfs/go-log"
 	msgio "github.com/jbenet/go-msgio"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
 	pb "github.com/libp2p/go-libp2p-secio/pb"
+	mh "github.com/multiformats/go-multihash"
 )
 
 var log = logging.Logger("secio")
@@ -104,6 +104,17 @@ func (s *secureSession) Handshake() error {
 	return s.handshakeErr
 }
 
+func hashSha256(data []byte) mh.Multihash {
+	h, err := mh.Sum(data, mh.SHA2_256, -1)
+	if err != nil {
+		// this error can be safely ignored (panic) because multihash only fails
+		// from the selection of hash function. If the fn + length are valid, it
+		// won't error.
+		panic("multihash failed to hash using SHA2_256.")
+	}
+	return h
+}
+
 // runHandshake performs initial communication over insecure channel to share
 // keys, IDs, and initiate communication, assigning all necessary params.
 // requires the duplex channel to be a msgio.ReadWriter (for framed messaging)
@@ -178,8 +189,8 @@ func (s *secureSession) runHandshake() error {
 	// step 1.2 Selection -- select/agree on best encryption parameters
 
 	// to determine order, use cmp(H(remote_pubkey||local_rand), H(local_pubkey||remote_rand)).
-	oh1 := u.Hash(append(proposeIn.GetPubkey(), nonceOut...))
-	oh2 := u.Hash(append(myPubKeyBytes, proposeIn.GetRand()...))
+	oh1 := hashSha256(append(proposeIn.GetPubkey(), nonceOut...))
+	oh2 := hashSha256(append(myPubKeyBytes, proposeIn.GetRand()...))
 	order := bytes.Compare(oh1, oh2)
 	if order == 0 {
 		return ErrEcho // talking to self (same socket. must be reuseport + dialing self)
