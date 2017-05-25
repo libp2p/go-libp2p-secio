@@ -74,7 +74,7 @@ func (s *secureSession) RemotePeer() peer.ID {
 	return s.remotePeer
 }
 
-// RemotePeer retrieves the remote peer.
+// RemotePublicKey retrieves the remote public key.
 func (s *secureSession) RemotePublicKey() ci.PubKey {
 	if err := s.Handshake(); err != nil {
 		return nil
