@@ -27,15 +27,15 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmP1DfoUjiWH2ZBo1PBH6FupdBucbDepx3HpWmEY6JMUpY",
+      "hash": "QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo",
       "name": "go-libp2p-crypto",
-      "version": "1.4.2"
+      "version": "1.5.0"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmdS9KpbDyPrieswibZhkod1oXqRwZJrUPzxCofAMWpFGq",
+      "hash": "QmXYjuNuxVzXKJCfWasQk1RqkhVLDM9jtUKhqc2WPQmFSB",
       "name": "go-libp2p-peer",
-      "version": "2.1.7"
+      "version": "2.2.0"
     }
   ],
   "gxVersion": "0.4.0",
