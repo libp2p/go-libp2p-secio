@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"sync"
 	"time"
 
 	logging "github.com/ipfs/go-log"
@@ -41,8 +40,6 @@ const nonceSize = 16
 // secureSession encapsulates all the parameters needed for encrypting
 // and decrypting traffic from an insecure channel.
 type secureSession struct {
-	ctx context.Context
-
 	secure    msgio.ReadWriteCloser
 	insecure  io.ReadWriteCloser
 	insecureM msgio.ReadWriter
@@ -55,11 +52,9 @@ type secureSession struct {
 	remote encParams
 
 	sharedSecret []byte
-
-	handshakeMu   sync.Mutex // guards handshakeDone + handshakeErr
-	handshakeDone bool
-	handshakeErr  error
 }
+
+var _ Session = &secureSession{}
 
 func (s *secureSession) Loggable() map[string]interface{} {
 	m := make(map[string]interface{})
@@ -83,25 +78,12 @@ func newSecureSession(ctx context.Context, local peer.ID, key ci.PrivKey, insecu
 		return nil, fmt.Errorf("insecure ReadWriter is nil")
 	}
 
-	s.ctx = ctx
 	s.insecure = insecure
 	s.insecureM = msgio.NewReadWriter(insecure)
-	return s, nil
-}
 
-func (s *secureSession) Handshake() error {
-	s.handshakeMu.Lock()
-	defer s.handshakeMu.Unlock()
-
-	if s.handshakeErr != nil {
-		return s.handshakeErr
-	}
-
-	if !s.handshakeDone {
-		s.handshakeErr = s.runHandshake()
-		s.handshakeDone = true
-	}
-	return s.handshakeErr
+	handshakeCtx, cancel := context.WithTimeout(ctx, HandshakeTimeout) // remove
+	defer cancel()
+	return s, s.runHandshake(handshakeCtx)
 }
 
 func hashSha256(data []byte) mh.Multihash {
@@ -118,11 +100,7 @@ func hashSha256(data []byte) mh.Multihash {
 // runHandshake performs initial communication over insecure channel to share
 // keys, IDs, and initiate communication, assigning all necessary params.
 // requires the duplex channel to be a msgio.ReadWriter (for framed messaging)
-func (s *secureSession) runHandshake() error {
-	defer func() { s.ctx = nil }()                              // clear to save memory
-	ctx, cancel := context.WithTimeout(s.ctx, HandshakeTimeout) // remove
-	defer cancel()
-
+func (s *secureSession) runHandshake(ctx context.Context) error {
 	// =============================================================================
 	// step 1. Propose -- propose cipher suite + send pubkeys + nonce
 
