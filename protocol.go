@@ -83,7 +83,11 @@ func newSecureSession(ctx context.Context, local peer.ID, key ci.PrivKey, insecu
 
 	handshakeCtx, cancel := context.WithTimeout(ctx, HandshakeTimeout) // remove
 	defer cancel()
-	return s, s.runHandshake(handshakeCtx)
+	if err := s.runHandshake(handshakeCtx); err != nil {
+		return nil, err
+	}
+
+	return s, nil
 }
 
 func hashSha256(data []byte) mh.Multihash {
