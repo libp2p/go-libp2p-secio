@@ -5,9 +5,9 @@ import (
 	"context"
 	"io"
 
-	msgio "github.com/jbenet/go-msgio"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
+	msgio "github.com/libp2p/go-msgio"
 )
 
 // SessionGenerator constructs secure communication sessions for a peer.

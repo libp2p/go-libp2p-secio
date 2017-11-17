@@ -11,8 +11,8 @@ import (
 	"sync"
 
 	proto "github.com/gogo/protobuf/proto"
-	msgio "github.com/jbenet/go-msgio"
-	mpool "github.com/jbenet/go-msgio/mpool"
+	msgio "github.com/libp2p/go-msgio"
+	mpool "github.com/libp2p/go-msgio/mpool"
 )
 
 // ErrMACInvalid signals that a MAC verification failed
