@@ -18,23 +18,17 @@ import (
 // ErrMACInvalid signals that a MAC verification failed
 var ErrMACInvalid = errors.New("MAC verification failed")
 
-// bufPool is a ByteSlicePool for messages. we need buffers because (sadly)
-// we cannot encrypt in place-- the user needs their buffer back.
-var bufPool = mpool.ByteSlicePool
-
 type etmWriter struct {
-	// params
-	pool mpool.Pool    // for the buffers with encrypted data
-	str  cipher.Stream // the stream cipher to encrypt with
-	mac  HMAC          // the mac to authenticate data with
-	w    io.Writer
+	str cipher.Stream // the stream cipher to encrypt with
+	mac HMAC          // the mac to authenticate data with
+	w   io.Writer
 
 	sync.Mutex
 }
 
 // NewETMWriter Encrypt-Then-MAC
 func NewETMWriter(w io.Writer, s cipher.Stream, mac HMAC) msgio.WriteCloser {
-	return &etmWriter{w: w, str: s, mac: mac, pool: bufPool}
+	return &etmWriter{w: w, str: s, mac: mac}
 }
 
 // Write writes passed in buffer as a single message.
@@ -52,7 +46,7 @@ func (w *etmWriter) WriteMsg(b []byte) error {
 
 	bufsize := uint32(4 + len(b) + w.mac.Size())
 	// encrypt.
-	buf := w.pool.Get(bufsize).([]byte)
+	buf := mpool.ByteSlicePool.Get(bufsize).([]byte)
 	data := buf[4 : 4+len(b)] // the pool's buffer may be larger
 	w.str.XORKeyStream(data, b)
 
@@ -70,7 +64,7 @@ func (w *etmWriter) WriteMsg(b []byte) error {
 	binary.BigEndian.PutUint32(buf[:4], uint32(len(data)))
 
 	_, err := w.w.Write(buf[:bufsize])
-	w.pool.Put(bufsize, buf)
+	mpool.ByteSlicePool.Put(bufsize, buf)
 	return err
 }
 
