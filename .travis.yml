@@ -5,7 +5,7 @@ go:
   - 1.9.x
   - tip
 
-before_install:
+install:
   - make deps
 
 script:
