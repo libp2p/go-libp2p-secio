@@ -10,10 +10,10 @@ import (
 	"time"
 
 	logging "github.com/ipfs/go-log"
-	msgio "github.com/jbenet/go-msgio"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
 	pb "github.com/libp2p/go-libp2p-secio/pb"
+	msgio "github.com/libp2p/go-msgio"
 	mh "github.com/multiformats/go-multihash"
 )
 
