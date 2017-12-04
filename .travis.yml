@@ -2,10 +2,13 @@ language: go
 sudo: false
 
 go:
-  - 1.8
+  - 1.9.x
   - tip
 
-script:
-  - make test
+install:
+  - make deps
 
-env: TEST_NO_FUSE=1 TEST_VERBOSE=1
+script:
+  - bash <(curl -s https://raw.githubusercontent.com/ipfs/ci-helpers/master/travis-ci/run-standard-tests.sh)
+
+env: GOTFLAGS="-race"
