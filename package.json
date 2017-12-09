@@ -21,21 +21,21 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV",
+      "hash": "QmVygcBKZdEdLJf77cd7AhkLJG8PqKBrf4ePoWVEf4sqRs",
       "name": "gogo-protobuf",
       "version": "0.0.0"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmaPbCnUMBohSGo3KnxEa2bHqyJVVeEEcwtqJAYxerieBo",
+      "hash": "QmQ8QS9wQZeGHxfvjdmP8c9swGfpPCSHg4eLA6snWaR8fa",
       "name": "go-libp2p-crypto",
-      "version": "1.5.0"
+      "version": "1.6.0"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmWNY7dV54ZDYmTA1ykVdwNCqC11mpU4zSUp6XDpLTH9eG",
+      "hash": "QmQeJ5UtNdrEDw78XuZoUknXXoWUB424cxuffbUZLvivtg",
       "name": "go-libp2p-peer",
-      "version": "2.2.1"
+      "version": "2.3.0"
     },
     {
       "author": "whyrusleeping",
