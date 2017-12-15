@@ -9,6 +9,7 @@ import (
 	"io"
 	"time"
 
+	proto "github.com/gogo/protobuf/proto"
 	logging "github.com/ipfs/go-log"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
@@ -24,6 +25,9 @@ var ErrUnsupportedKeyType = errors.New("unsupported key type")
 
 // ErrClosed signals the closing of a connection.
 var ErrClosed = errors.New("connection closed")
+
+// ErrBadSig signals that the peer sent us a handshake packet with a bad signature.
+var ErrBadSig = errors.New("bad signature")
 
 // ErrEcho is returned when we're attempting to handshake with the same keys and nonces.
 var ErrEcho = errors.New("same keys and nonces. one side talking to self")
@@ -105,6 +109,26 @@ func hashSha256(data []byte) mh.Multihash {
 // keys, IDs, and initiate communication, assigning all necessary params.
 // requires the duplex channel to be a msgio.ReadWriter (for framed messaging)
 func (s *secureSession) runHandshake(ctx context.Context) error {
+	defer log.EventBegin(ctx, "secureHandshake", s).Done()
+
+	result := make(chan error, 1)
+	go func() {
+		// do *not* close the channel (will look like a success).
+		result <- s.runHandshakeSync()
+	}()
+
+	var err error
+	select {
+	case <-ctx.Done():
+		// State unknown. We *have* to close this.
+		s.insecure.Close()
+		err = ctx.Err()
+	case err = <-result:
+	}
+	return err
+}
+
+func (s *secureSession) runHandshakeSync() error {
 	// =============================================================================
 	// step 1. Propose -- propose cipher suite + send pubkeys + nonce
 
@@ -115,8 +139,6 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-
-	defer log.EventBegin(ctx, "secureHandshake", s).Done()
 
 	s.local.permanentPubKey = s.localKey.GetPublic()
 	myPubKeyBytes, err := s.local.permanentPubKey.Bytes()
@@ -134,16 +156,22 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	// log.Debugf("1.0 Propose: nonce:%s exchanges:%s ciphers:%s hashes:%s",
 	// 	nonceOut, SupportedExchanges, SupportedCiphers, SupportedHashes)
 
-	// Send Propose packet (respects ctx)
-	proposeOutBytes, err := writeMsgCtx(ctx, s.insecureM, proposeOut)
+	// Marshal our propose packet
+	proposeOutBytes, err := proto.Marshal(proposeOut)
 	if err != nil {
 		return err
 	}
 
-	// Receive + Parse their Propose packet and generate an Exchange packet.
-	proposeIn := new(pb.Propose)
-	proposeInBytes, err := readMsgCtx(ctx, s.insecureM, proposeIn)
+	// Send Propose packet and Receive their Propose packet
+	proposeInBytes, err := readWriteMsg(s.insecureM, proposeOutBytes)
 	if err != nil {
+		return err
+	}
+	defer s.insecureM.ReleaseMsg(proposeInBytes)
+
+	// Parse their propose packet
+	proposeIn := new(pb.Propose)
+	if err = proto.Unmarshal(proposeInBytes, proposeIn); err != nil {
 		return err
 	}
 
@@ -208,6 +236,9 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	// Generate EphemeralPubKey
 	var genSharedKey ci.GenSharedKey
 	s.local.ephemeralPubKey, genSharedKey, err = ci.GenerateEKeyPair(s.local.curveT)
+	if err != nil {
+		return err
+	}
 
 	// Gather corpus to sign.
 	selectionOut := new(bytes.Buffer)
@@ -224,14 +255,22 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 		return err
 	}
 
-	// Send Propose packet (respects ctx)
-	if _, err := writeMsgCtx(ctx, s.insecureM, exchangeOut); err != nil {
+	// Marshal our exchange packet
+	exchangeOutBytes, err := proto.Marshal(exchangeOut)
+	if err != nil {
 		return err
 	}
 
-	// Receive + Parse their Exchange packet.
+	// Send Exchange packet and receive their Exchange packet
+	exchangeInBytes, err := readWriteMsg(s.insecureM, exchangeOutBytes)
+	if err != nil {
+		return err
+	}
+	defer s.insecureM.ReleaseMsg(exchangeInBytes)
+
+	// Parse their Exchange packet.
 	exchangeIn := new(pb.Exchange)
-	if _, err := readMsgCtx(ctx, s.insecureM, exchangeIn); err != nil {
+	if err = proto.Unmarshal(exchangeInBytes, exchangeIn); err != nil {
 		return err
 	}
 
@@ -256,9 +295,8 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	}
 
 	if !sigOK {
-		err := errors.New("Bad signature!")
-		// log.Error("2.1 Verify: failed: %s", err)
-		return err
+		// log.Error("2.1 Verify: failed: %s", ErrBadSig)
+		return ErrBadSig
 	}
 	// log.Debugf("2.1 Verify: signature verified.")
 
@@ -312,16 +350,13 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	s.secure = msgio.Combine(w, r).(msgio.ReadWriteCloser)
 
 	// log.Debug("3.0 finish. sending: %v", proposeIn.GetRand())
-	// send their Nonce.
-	if _, err := s.secure.Write(proposeIn.GetRand()); err != nil {
-		return fmt.Errorf("Failed to write Finish nonce: %s", err)
-	}
 
-	// read our Nonce
-	nonceOut2 := make([]byte, len(nonceOut))
-	if _, err := io.ReadFull(s.secure, nonceOut2); err != nil {
-		return fmt.Errorf("Failed to read Finish nonce: %s", err)
+	// send their Nonce and receive ours
+	nonceOut2, err := readWriteMsg(s.secure, proposeIn.GetRand())
+	if err != nil {
+		return err
 	}
+	defer s.secure.ReleaseMsg(nonceOut2)
 
 	// log.Debug("3.0 finish.\n\texpect: %v\n\tactual: %v", nonceOut, nonceOut2)
 	if !bytes.Equal(nonceOut, nonceOut2) {
