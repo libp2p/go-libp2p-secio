@@ -25,6 +25,9 @@ var ErrUnsupportedKeyType = errors.New("unsupported key type")
 // ErrClosed signals the closing of a connection.
 var ErrClosed = errors.New("connection closed")
 
+// ErrBadSig signals that the peer sent us a handshake packet with a bad signature.
+var ErrBadSig = errors.New("bad signature")
+
 // ErrEcho is returned when we're attempting to handshake with the same keys and nonces.
 var ErrEcho = errors.New("same keys and nonces. one side talking to self")
 
@@ -259,9 +262,8 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	}
 
 	if !sigOK {
-		err := errors.New("Bad signature!")
-		// log.Error("2.1 Verify: failed: %s", err)
-		return err
+		// log.Error("2.1 Verify: failed: %s", ErrBadSig)
+		return ErrBadSig
 	}
 	// log.Debugf("2.1 Verify: signature verified.")
 
