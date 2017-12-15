@@ -208,6 +208,9 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	// Generate EphemeralPubKey
 	var genSharedKey ci.GenSharedKey
 	s.local.ephemeralPubKey, genSharedKey, err = ci.GenerateEKeyPair(s.local.curveT)
+	if err != nil {
+		return err
+	}
 
 	// Gather corpus to sign.
 	selectionOut := new(bytes.Buffer)
