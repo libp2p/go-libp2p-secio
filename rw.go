@@ -1,7 +1,6 @@
 package secio
 
 import (
-	"context"
 	"crypto/cipher"
 	"crypto/hmac"
 	"encoding/binary"
@@ -10,7 +9,6 @@ import (
 	"io"
 	"sync"
 
-	proto "github.com/gogo/protobuf/proto"
 	msgio "github.com/libp2p/go-msgio"
 	mpool "github.com/libp2p/go-msgio/mpool"
 )
@@ -243,53 +241,24 @@ func (r *etmReader) ReleaseMsg(b []byte) {
 	r.msg.ReleaseMsg(b)
 }
 
-// writeMsgCtx is used by the
-func writeMsgCtx(ctx context.Context, w msgio.Writer, msg proto.Message) ([]byte, error) {
-	enc, err := proto.Marshal(msg)
-	if err != nil {
-		return nil, err
-	}
-
-	// write in a goroutine so we can exit when our context is cancelled.
-	done := make(chan error)
-	go func(m []byte) {
-		err := w.WriteMsg(m)
-		select {
-		case done <- err:
-		case <-ctx.Done():
-		}
-	}(enc)
-
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case e := <-done:
-		return enc, e
-	}
-}
-
-func readMsgCtx(ctx context.Context, r msgio.Reader, p proto.Message) ([]byte, error) {
-	var msg []byte
-
-	// read in a goroutine so we can exit when our context is cancelled.
-	done := make(chan error)
+// read and write a message at the same time.
+func readWriteMsg(c msgio.ReadWriter, out []byte) ([]byte, error) {
+	wresult := make(chan error)
 	go func() {
-		var err error
-		msg, err = r.ReadMsg()
-		select {
-		case done <- err:
-		case <-ctx.Done():
-		}
+		wresult <- c.WriteMsg(out)
 	}()
 
-	select {
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	case e := <-done:
-		if e != nil {
-			return nil, e
-		}
-	}
+	msg, err1 := c.ReadMsg()
 
-	return msg, proto.Unmarshal(msg, p)
+	// Always wait for the read to finish.
+	err2 := <-wresult
+
+	if err1 != nil {
+		return nil, err1
+	}
+	if err2 != nil {
+		c.ReleaseMsg(msg)
+		return nil, err2
+	}
+	return msg, nil
 }
