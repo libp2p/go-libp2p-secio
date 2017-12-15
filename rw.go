@@ -199,6 +199,7 @@ func (r *etmReader) ReadMsg() ([]byte, error) {
 
 	n, err := r.macCheckThenDecrypt(msg)
 	if err != nil {
+		r.msg.ReleaseMsg(msg)
 		return nil, err
 	}
 	return msg[:n], nil
