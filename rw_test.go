@@ -83,5 +83,48 @@ func TestBasicETMStream(t *testing.T) {
 		t.Fatal("got wrong message")
 	}
 
+	w.Close()
+	r.Close()
+}
+
+func TestBasicETMStreamRaw(t *testing.T) {
+	buf := new(bytes.Buffer)
+
+	ki := getTestKeyInfo()
+	w, err := getTestingWriter(buf, ki)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	before := []byte("hello world")
+	wlen, err := w.Write(before)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if wlen != len(before) {
+		t.Errorf("Write length mismatch. %d != %d", wlen, len(before))
+	}
+
+	r, err := getTestingReader(buf, ki)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	after := make([]byte, wlen)
+	rlen, err := r.Read(after)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if rlen != wlen {
+		t.Errorf("Read length mismatch. %d != %d", rlen, wlen)
+	}
+
+	if string(before) != string(after) {
+		t.Fatal("got wrong message")
+	}
+
+	w.Close()
 	r.Close()
 }
