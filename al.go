@@ -9,11 +9,11 @@ import (
 	"crypto/cipher"
 	"crypto/hmac"
 	"crypto/sha1"
-	"crypto/sha256"
 	"crypto/sha512"
 	"hash"
 
 	ci "github.com/libp2p/go-libp2p-crypto"
+	sha256 "github.com/minio/sha256-simd"
 	bfish "golang.org/x/crypto/blowfish"
 )
 
