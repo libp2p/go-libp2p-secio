@@ -18,13 +18,19 @@ import (
 )
 
 // SupportedExchanges is the list of supported ECDH curves
-var SupportedExchanges = "P-256,P-384,P-521"
+var SupportedExchanges = DefaultSupportedExchanges
+
+const DefaultSupportedExchanges = "P-256,P-384,P-521"
 
 // SupportedCiphers is the list of supported Ciphers
-var SupportedCiphers = "AES-256,AES-128,Blowfish"
+var SupportedCiphers = DefaultSupportedCiphers
+
+const DefaultSupportedCiphers = "AES-256,AES-128,Blowfish"
 
 // SupportedHashes is the list of supported Hashes
-var SupportedHashes = "SHA256,SHA512"
+var SupportedHashes = DefaultSupportedHashes
+
+const DefaultSupportedHashes = "SHA256,SHA512"
 
 // HMAC carries a hash and its size
 type HMAC struct {
