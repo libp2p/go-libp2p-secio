@@ -54,6 +54,12 @@
       "hash": "QmXTpwq2AkzQsPjKqFQDNY2bMdsAT53hUBETeyj8QRHTZU",
       "name": "sha256-simd",
       "version": "0.1.1"
+    },
+    {
+      "author": "Stebalien",
+      "hash": "QmSieFUauuYnroStqmRAEgu9BMXDNY5LbtNgzXcFitBKXQ",
+      "name": "go-conn-security",
+      "version": "0.1.1"
     }
   ],
   "gxVersion": "0.4.0",
