@@ -1,32 +1,40 @@
 package secio
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"math/rand"
 	"net"
 	"strings"
 	"testing"
 	"time"
 
+	cs "github.com/libp2p/go-conn-security"
+	cst "github.com/libp2p/go-conn-security/test"
 	ci "github.com/libp2p/go-libp2p-crypto"
 	peer "github.com/libp2p/go-libp2p-peer"
 )
 
-func NewTestSessionGenerator(typ, bits int, t *testing.T) SessionGenerator {
-	sk, pk, err := ci.GenerateKeyPair(typ, bits)
+func newTestTransport(t *testing.T, typ, bits int) *Transport {
+	priv, pub, err := ci.GenerateKeyPair(typ, bits)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	p, err := peer.IDFromPublicKey(pk)
+	id, err := peer.IDFromPublicKey(pub)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	return SessionGenerator{
-		LocalID:    p,
-		PrivateKey: sk,
+	return &Transport{
+		PrivateKey: priv,
+		LocalID:    id,
 	}
+}
+
+func TestTransport(t *testing.T) {
+	at := newTestTransport(t, ci.RSA, 2048)
+	bt := newTestTransport(t, ci.RSA, 2048)
+	cst.SubtestAll(t, at, bt, at.LocalID, bt.LocalID)
 }
 
 func max(a, b int) int {
@@ -37,23 +45,24 @@ func max(a, b int) int {
 }
 
 // Create a new pair of connected TCP sockets.
-func NewConnPair(t *testing.T) (client net.Conn, server net.Conn) {
+func newConnPair(t *testing.T) (net.Conn, net.Conn) {
 	lstnr, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatalf("Failed to listen: %v", err)
-		return
+		return nil, nil
 	}
 
-	var client_err error
+	var clientErr error
+	var client net.Conn
 	addr := lstnr.Addr()
 	done := make(chan struct{})
 
 	go func() {
 		defer close(done)
-		client, client_err = net.Dial(addr.Network(), addr.String())
+		client, clientErr = net.Dial(addr.Network(), addr.String())
 	}()
 
-	server, err = lstnr.Accept()
+	server, err := lstnr.Accept()
 	<-done
 
 	lstnr.Close()
@@ -62,8 +71,8 @@ func NewConnPair(t *testing.T) (client net.Conn, server net.Conn) {
 		t.Fatalf("Failed to accept: %v", err)
 	}
 
-	if client_err != nil {
-		t.Fatalf("Failed to connect: %v", client_err)
+	if clientErr != nil {
+		t.Fatalf("Failed to connect: %v", clientErr)
 	}
 
 	return client, server
@@ -71,35 +80,31 @@ func NewConnPair(t *testing.T) (client net.Conn, server net.Conn) {
 
 // Create a new pair of connected sessions based off of the provided
 // session generators.
-func NewTestSessionPair(client_sg, server_sg SessionGenerator,
-	t *testing.T) (client_sess Session, server_sess Session) {
-	var (
-		err        error
-		client_err error
-	)
-
-	client, server := NewConnPair(t)
+func connect(t *testing.T, clientTpt, serverTpt *Transport) (cs.Conn, cs.Conn) {
+	client, server := newConnPair(t)
 
 	// Connect the client and server sessions
 	done := make(chan struct{})
 
+	var clientConn cs.Conn
+	var clientErr error
 	go func() {
 		defer close(done)
-		client_sess, client_err = client_sg.NewSession(context.TODO(), client)
+		clientConn, clientErr = clientTpt.SecureOutbound(context.TODO(), client, serverTpt.LocalID)
 	}()
 
-	server_sess, err = server_sg.NewSession(context.TODO(), server)
+	serverConn, serverErr := serverTpt.SecureInbound(context.TODO(), server)
 	<-done
 
-	if err != nil {
-		t.Fatal(err)
+	if serverErr != nil {
+		t.Fatal(serverErr)
 	}
 
-	if client_err != nil {
-		t.Fatal(client_err)
+	if clientErr != nil {
+		t.Fatal(clientErr)
 	}
 
-	return
+	return clientConn, serverConn
 }
 
 // Shuffle a slice of strings
@@ -175,86 +180,82 @@ func getFullSessionParams() []sessionParam {
 }
 
 // Check the peer IDs
-func testIDs(client_sg, server_sg SessionGenerator,
-	client_sess, server_sess Session, t *testing.T) {
-	if client_sess.LocalPeer() != client_sg.LocalID {
+func testIDs(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverConn cs.Conn) {
+	if clientConn.LocalPeer() != clientTpt.LocalID {
 		t.Fatal("Client Local Peer ID mismatch.")
 	}
 
-	if client_sess.RemotePeer() != server_sg.LocalID {
+	if clientConn.RemotePeer() != serverTpt.LocalID {
 		t.Fatal("Client Remote Peer ID mismatch.")
 	}
 
-	if client_sess.LocalPeer() != server_sess.RemotePeer() {
+	if clientConn.LocalPeer() != serverConn.RemotePeer() {
 		t.Fatal("Server Local Peer ID mismatch.")
 	}
 }
 
 // Check the keys
-func testKeys(client_sg, server_sg SessionGenerator,
-	client_sess, server_sess Session, t *testing.T) {
-	sk := server_sess.LocalPrivateKey()
+func testKeys(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverConn cs.Conn) {
+	sk := serverConn.LocalPrivateKey()
 	pk := sk.GetPublic()
 
-	if !sk.Equals(server_sg.PrivateKey) {
+	if !sk.Equals(serverTpt.PrivateKey) {
 		t.Error("Private key Mismatch.")
 	}
 
-	if !pk.Equals(client_sess.RemotePublicKey()) {
+	if !pk.Equals(clientConn.RemotePublicKey()) {
 		t.Error("Public key mismatch.")
 	}
 }
 
 // Check sending and receiving messages
-func testReadWrite(client_sess, server_sess Session, t *testing.T) {
-	client_rwc := client_sess.ReadWriter()
-	server_rwc := server_sess.ReadWriter()
-
+func testReadWrite(t *testing.T, clientConn, serverConn cs.Conn) {
 	before := []byte("hello world")
-	err := client_rwc.WriteMsg(before)
+	_, err := clientConn.Write(before)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	after, err := server_rwc.ReadMsg()
+	after := make([]byte, len(before))
+	_, err = io.ReadFull(serverConn, after)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if string(before) != string(after) {
+	if !bytes.Equal(before, after) {
 		t.Errorf("Message mismatch. %v != %v", before, after)
 	}
 }
 
 // Setup a new session with a pair of locally connected sockets
-func testSession(client_sg, server_sg SessionGenerator, t *testing.T) {
-	client_sess, server_sess := NewTestSessionPair(client_sg, server_sg, t)
+func testConnection(t *testing.T, clientTpt, serverTpt *Transport) {
+	clientConn, serverConn := connect(t, clientTpt, serverTpt)
 
-	testIDs(client_sg, server_sg, client_sess, server_sess, t)
-	testKeys(client_sg, server_sg, client_sess, server_sess, t)
-	testReadWrite(client_sess, server_sess, t)
+	testIDs(t, clientTpt, serverTpt, clientConn, serverConn)
+	testKeys(t, clientTpt, serverTpt, clientConn, serverConn)
+	testReadWrite(t, clientConn, serverConn)
 
-	client_sess.Close()
-	server_sess.Close()
+	clientConn.Close()
+	serverConn.Close()
 }
 
 // Run a set of sessions through the session setup and verification.
-func TestSessions(t *testing.T) {
-	client_sg := NewTestSessionGenerator(ci.RSA, 1024, t)
-	server_sg := NewTestSessionGenerator(ci.Ed25519, 1024, t)
+func TestConnections(t *testing.T) {
+	clientTpt := newTestTransport(t, ci.RSA, 1024)
+	serverTpt := newTestTransport(t, ci.Ed25519, 1024)
 
 	t.Logf("Using default session parameters.")
-	testSession(client_sg, server_sg, t)
+	testConnection(t, clientTpt, serverTpt)
 
 	defer resetSessionParams()
-	test_params := getMinimalSessionParams()
-	for _, params := range test_params {
+	testParams := getMinimalSessionParams()
+	for _, params := range testParams {
 		SupportedExchanges = params.Exchange
 		SupportedCiphers = params.Cipher
 		SupportedHashes = params.Hash
 
 		t.Logf("Using Exchange: %s Cipher: %s Hash: %s\n",
 			params.Exchange, params.Cipher, params.Hash)
-		testSession(client_sg, server_sg, t)
+		testConnection(t, clientTpt, serverTpt)
 	}
 }
