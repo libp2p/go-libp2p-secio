@@ -21,12 +21,6 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmZ4Qi3GaRbjcx28Sme5eMH7RQjGkt8wHxt2a65oLaeFEV",
-      "name": "gogo-protobuf",
-      "version": "0.0.0"
-    },
-    {
-      "author": "whyrusleeping",
       "hash": "Qme1knMqwt1hKZbc1BmQFmnm9f36nyQGwXxPGVpVJ9rMK5",
       "name": "go-libp2p-crypto",
       "version": "1.6.2"
@@ -60,6 +54,12 @@
       "hash": "QmYMGCwtKbLXfh2MUTbLoP66N9Y24DSg8PFJRG21eE2qwv",
       "name": "go-conn-security",
       "version": "0.1.5"
+    },
+    {
+      "author": "whyrusleeping",
+      "hash": "QmdxUuburamoF6zF9qjeQC4WYcWGbWuRmdLacMEsW8ioD8",
+      "name": "gogo-protobuf",
+      "version": "0.0.0"
     }
   ],
   "gxVersion": "0.4.0",
