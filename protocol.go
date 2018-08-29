@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"strings"
 	"time"
 
 	proto "github.com/gogo/protobuf/proto"
@@ -219,7 +220,7 @@ func (s *secureSession) runHandshakeSync() error {
 	// to determine order, use cmp(H(remote_pubkey||local_rand), H(local_pubkey||remote_rand)).
 	oh1 := hashSha256(append(proposeIn.GetPubkey(), nonceOut...))
 	oh2 := hashSha256(append(myPubKeyBytes, proposeIn.GetRand()...))
-	order := bytes.Compare(oh1, oh2)
+	order := strings.Compare(oh1.Binary(), oh2.Binary())
 	if order == 0 {
 		return ErrEcho // talking to self (same socket. must be reuseport + dialing self)
 	}
