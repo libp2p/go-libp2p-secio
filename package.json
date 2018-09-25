@@ -60,6 +60,12 @@
       "hash": "QmdxUuburamoF6zF9qjeQC4WYcWGbWuRmdLacMEsW8ioD8",
       "name": "gogo-protobuf",
       "version": "0.0.0"
+    },
+    {
+      "author": "Stebalien",
+      "hash": "QmUQy76yspPa3fRyY3GzXFTg9n8JVwFru6ue3KFRt4MeTw",
+      "name": "go-buffer-pool",
+      "version": "0.1.1"
     }
   ],
   "gxVersion": "0.4.0",
