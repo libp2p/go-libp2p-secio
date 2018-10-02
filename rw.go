@@ -88,6 +88,10 @@ type etmReader struct {
 	str cipher.Stream    // the stream cipher to encrypt with
 	mac HMAC             // the mac to authenticate data with
 
+	// internal buffer used for checking MACs, this saves us quite a few
+	// allocations and should be quite small.
+	macBuf []byte
+
 	sync.Mutex
 }
 
@@ -215,12 +219,12 @@ func (r *etmReader) macCheckThenDecrypt(m []byte) (int, error) {
 	macd := m[mark:]
 
 	r.mac.Write(data)
-	expected := r.mac.Sum(nil)
+	r.macBuf = r.mac.Sum(r.macBuf[:0])
 	r.mac.Reset()
 
 	// check mac. if failed, return error.
-	if !hmac.Equal(macd, expected) {
-		log.Debug("MAC Invalid:", expected, "!=", macd)
+	if !hmac.Equal(macd, r.macBuf) {
+		log.Debug("MAC Invalid:", r.macBuf, "!=", macd)
 		return 0, ErrMACInvalid
 	}
 
