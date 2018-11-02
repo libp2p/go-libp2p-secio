@@ -21,15 +21,15 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmPvyPwuCgJ7pDmrKDxRtsScJgBaM5h4EpRL2qQJsmXf4n",
+      "hash": "QmaZ1F8vQdJaQqA8hjAzH8a7Qnqqb2n2ZYeUbKMjMcxAZe",
       "name": "go-libp2p-crypto",
-      "version": "2.0.1"
+      "version": "2.0.2"
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmTRhk7cgjUf2gfQ3p2M9KPECNZEW9XUrmHcFCgog4cPgB",
+      "hash": "QmUz7HmU4ws577TMEVNoTjNghVvq2jXnxnVhbkNXKPKpgK",
       "name": "go-libp2p-peer",
-      "version": "2.4.0"
+      "version": "2.4.1"
     },
     {
       "author": "whyrusleeping",
@@ -39,21 +39,21 @@
     },
     {
       "author": "multiformats",
-      "hash": "QmPnFwZ2JXKnXgMw8CdBPxn7FWh6LLdjUjxV1fKHuJnkr8",
+      "hash": "QmerPMzPk1mJVowm8KgmoknWa4yCYvvugMPsgWmDNUvDLW",
       "name": "go-multihash",
-      "version": "1.0.8"
+      "version": "1.0.9"
     },
     {
       "author": "minio",
-      "hash": "QmXTpwq2AkzQsPjKqFQDNY2bMdsAT53hUBETeyj8QRHTZU",
+      "hash": "QmcTzQXRcU2vf8yX5EEboz1BSvWC7wWmeYAKVQmhp8WZYU",
       "name": "sha256-simd",
-      "version": "0.1.1"
+      "version": "0.1.2"
     },
     {
       "author": "Stebalien",
-      "hash": "QmZ3XKH272gU9px86XqWYeZHU65ayHxWs6Wbswvdj2VqVK",
+      "hash": "QmSdqPqBFMHnXJRGPdAHkLFrivJhrBh9xDmKmgpoRis4nn",
       "name": "go-conn-security",
-      "version": "0.1.15"
+      "version": "0.1.16"
     },
     {
       "author": "whyrusleeping",
