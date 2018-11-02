@@ -15,9 +15,9 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmZChCsSt8DctjceaL56Eibc29CVQq4dGKRXC5JRZ6Ppae",
+      "hash": "QmcuXC5cxs79ro2cUuHs4HQ2bkDLJUYokwL8aivcX6HW3C",
       "name": "go-log",
-      "version": "1.5.7"
+      "version": "1.5.8"
     },
     {
       "author": "whyrusleeping",
@@ -51,9 +51,9 @@
     },
     {
       "author": "Stebalien",
-      "hash": "QmSdqPqBFMHnXJRGPdAHkLFrivJhrBh9xDmKmgpoRis4nn",
+      "hash": "QmV5458E9oWTDkfw3SAGQY3GWsg9zmMvykFHkcdc6pYS7r",
       "name": "go-conn-security",
-      "version": "0.1.16"
+      "version": "0.1.17"
     },
     {
       "author": "whyrusleeping",
@@ -73,6 +73,6 @@
   "license": "MIT",
   "name": "go-libp2p-secio",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "2.0.18"
+  "version": "2.0.19"
 }
 
