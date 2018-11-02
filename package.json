@@ -73,6 +73,6 @@
   "license": "MIT",
   "name": "go-libp2p-secio",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "2.0.17"
+  "version": "2.0.18"
 }
 
