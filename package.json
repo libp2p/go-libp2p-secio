@@ -51,9 +51,9 @@
     },
     {
       "author": "Stebalien",
-      "hash": "QmXCnmY9nBCDQBhzxrn5ZKqSYYHiFzc5btFt32UpgECHnS",
+      "hash": "QmVovmja8iXHy1JouPULFdKExUrGutwzgptJZEAFG9rL1t",
       "name": "go-conn-security",
-      "version": "0.1.21"
+      "version": "0.1.22"
     },
     {
       "author": "whyrusleeping",
@@ -73,6 +73,6 @@
   "license": "MIT",
   "name": "go-libp2p-secio",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "2.0.23"
+  "version": "2.0.24"
 }
 
