@@ -12,3 +12,5 @@ deps: gx
 	gx-go rewrite
 	go get -t ./...
 
+mod_deps:
+	env GO111MODULE=on go mod download
