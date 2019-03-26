@@ -9,7 +9,7 @@ go:
 
 env:
   global:
-    - GOTFLAGS="-race"
+    - GOTFLAGS="-race -count 2"
   matrix:
     - BUILD_DEPTYPE=gx
     - BUILD_DEPTYPE=gomod
