@@ -53,3 +53,7 @@ This repository falls under the IPFS [Code of Conduct](https://github.com/libp2p
 ## License
 
 MIT
+
+---
+
+The last gx published version of this module was: 2.0.30: QmSVaJe1aRjc78cZARTtf4pqvXERYwihyYhZWoVWceHnsK
