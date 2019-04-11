@@ -19,23 +19,12 @@ Package `go-libp2p-secio` is a libp2p [stream security transport](https://github
 go get github.com/libp2p/go-libp2p-secio
 ```
 
-Note that `go-libp2p-secio` is packaged with Gx, so it is recommended to use Gx to install and use it (see the Usage section).
+This repo is [gomod](https://github.com/golang/go/wiki/Modules)-compatible, and users of
+go 1.11 and later with modules enabled will automatically pull the latest tagged release
+by referencing this package. Upgrades to future releases can be managed using `go get`,
+or by editing your `go.mod` file as [described by the gomod documentation](https://github.com/golang/go/wiki/Modules#how-to-upgrade-and-downgrade-dependencies).
 
 ## Usage
-
-This module is packaged with [Gx](https://github.com/whyrusleeping/gx). In order to use it in your own project it is recommended that you:
-
-```sh
-go get -u github.com/whyrusleeping/gx
-go get -u github.com/whyrusleeping/gx-go
-cd <your-project-repository>
-gx init
-gx import github.com/libp2p/go-libp2p-secio
-gx install --global
-gx-go --rewrite
-```
-
-Please check [Gx](https://github.com/whyrusleeping/gx) and [Gx-go](https://github.com/whyrusleeping/gx-go) documentation for more information.
 
 For more information about how `go-libp2p-secio` is used in the libp2p context, you can see the [go-libp2p-conn](https://github.com/libp2p/go-libp2p-conn) module.
 
