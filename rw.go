@@ -21,6 +21,9 @@ type etmWriter struct {
 	mac HMAC          // the mac to authenticate data with
 	w   io.Writer
 
+	// XXX
+	counter int64
+
 	sync.Mutex
 }
 
@@ -41,6 +44,12 @@ func (w *etmWriter) Write(b []byte) (int, error) {
 func (w *etmWriter) WriteMsg(b []byte) error {
 	w.Lock()
 	defer w.Unlock()
+
+	// XXX
+	w.counter++
+	if w.counter%97 == 0 { // use a prime
+		log.Errorf("secio.WriteMsg: %d", len(b))
+	}
 
 	// encrypt.
 	buf := pool.Get(4 + len(b) + w.mac.Size())
