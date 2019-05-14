@@ -81,6 +81,10 @@ func (s *secureSession) Write(b []byte) (n int, err error) {
 	return s.ReadWriteCloser.Write(b)
 }
 
+func (s *secureSession) Close() error {
+	return s.insecure.Close()
+}
+
 func NewSecureSession(ctx context.Context, insecure net.Conn) (*secureSession, error) {
 	privKey, _, _ := ci.GenerateKeyPair(ci.RSA, 4096)
 	s := &secureSession{}
