@@ -73,6 +73,31 @@ func (s *secureSession) Loggable() map[string]interface{} {
 	return m
 }
 
+func (s *secureSession) Read(b []byte) (n int, err error) {
+	return s.ReadWriteCloser.Read(b)
+}
+
+func (s *secureSession) Write(b []byte) (n int, err error) {
+	return s.ReadWriteCloser.Write(b)
+}
+
+func NewSecureSession(ctx context.Context, insecure net.Conn) (*secureSession, error) {
+	privKey, _, _ := ci.GenerateKeyPair(ci.RSA, 4096)
+	s := &secureSession{}
+	s.localKey = privKey
+	s.insecure = insecure
+	s.insecureM = msgio.NewReadWriter(insecure)
+
+	handshakeCtx, cancel := context.WithTimeout(ctx, HandshakeTimeout) // remove
+	defer cancel()
+	if err := s.runHandshake(handshakeCtx); err != nil {
+		return nil, err
+	}
+
+	fmt.Println("NewSecureSession Success!")
+	return s, nil
+}
+
 func newSecureSession(ctx context.Context, local peer.ID, key ci.PrivKey, insecure net.Conn, remotePeer peer.ID) (*secureSession, error) {
 	s := &secureSession{localPeer: local, localKey: key}
 
