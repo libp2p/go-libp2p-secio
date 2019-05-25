@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	cs "github.com/libp2p/go-conn-security"
-	cst "github.com/libp2p/go-conn-security/test"
-	ci "github.com/libp2p/go-libp2p-crypto"
-	peer "github.com/libp2p/go-libp2p-peer"
+	ci "github.com/libp2p/go-libp2p-core/crypto"
+	"github.com/libp2p/go-libp2p-core/peer"
+	"github.com/libp2p/go-libp2p-core/sec"
+	cst "github.com/libp2p/go-libp2p-testing/suites/sec"
 )
 
 func newTestTransport(t *testing.T, typ, bits int) *Transport {
@@ -80,13 +80,13 @@ func newConnPair(t *testing.T) (net.Conn, net.Conn) {
 
 // Create a new pair of connected sessions based off of the provided
 // session generators.
-func connect(t *testing.T, clientTpt, serverTpt *Transport) (cs.Conn, cs.Conn) {
+func connect(t *testing.T, clientTpt, serverTpt *Transport) (sec.SecureConn, sec.SecureConn) {
 	client, server := newConnPair(t)
 
 	// Connect the client and server sessions
 	done := make(chan struct{})
 
-	var clientConn cs.Conn
+	var clientConn sec.SecureConn
 	var clientErr error
 	go func() {
 		defer close(done)
@@ -180,7 +180,7 @@ func getFullSessionParams() []sessionParam {
 }
 
 // Check the peer IDs
-func testIDs(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverConn cs.Conn) {
+func testIDs(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverConn sec.SecureConn) {
 	if clientConn.LocalPeer() != clientTpt.LocalID {
 		t.Fatal("Client Local Peer ID mismatch.")
 	}
@@ -195,7 +195,7 @@ func testIDs(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverCo
 }
 
 // Check the keys
-func testKeys(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverConn cs.Conn) {
+func testKeys(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverConn sec.SecureConn) {
 	sk := serverConn.LocalPrivateKey()
 	pk := sk.GetPublic()
 
@@ -209,7 +209,7 @@ func testKeys(t *testing.T, clientTpt, serverTpt *Transport, clientConn, serverC
 }
 
 // Check sending and receiving messages
-func testReadWrite(t *testing.T, clientConn, serverConn cs.Conn) {
+func testReadWrite(t *testing.T, clientConn, serverConn sec.SecureConn) {
 	before := []byte("hello world")
 	_, err := clientConn.Write(before)
 	if err != nil {
