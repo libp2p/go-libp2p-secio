@@ -125,9 +125,12 @@ func (s *secureSession) runHandshake(ctx context.Context) error {
 	var err error
 	select {
 	case <-ctx.Done():
+		err = ctx.Err()
+
 		// State unknown. We *have* to close this.
 		s.insecure.Close()
-		err = ctx.Err()
+		// Wait for the handshake to return.
+		<-result
 	case err = <-result:
 	}
 	return err
