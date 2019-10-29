@@ -114,8 +114,6 @@ func hashSha256(data []byte) mh.Multihash {
 // keys, IDs, and initiate communication, assigning all necessary params.
 // requires the duplex channel to be a msgio.ReadWriter (for framed messaging)
 func (s *secureSession) runHandshake(ctx context.Context) error {
-	defer log.EventBegin(ctx, "secureHandshake", s).Done()
-
 	result := make(chan error, 1)
 	go func() {
 		// do *not* close the channel (will look like a success).
