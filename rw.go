@@ -15,6 +15,7 @@ import (
 
 // ErrMACInvalid signals that a MAC verification failed
 var ErrMACInvalid = errors.New("MAC verification failed")
+var ErrReset = errors.New("connection reset")
 
 type etmWriter struct {
 	str cipher.Stream // the stream cipher to encrypt with
@@ -149,9 +150,27 @@ func (r *etmReader) fill() error {
 	return nil
 }
 
-func (r *etmReader) Read(buf []byte) (int, error) {
+func (r *etmReader) Read(buf []byte) (read int, err error) {
 	r.Lock()
-	defer r.Unlock()
+	defer func() {
+		// Replace any EOF errors with a "reset" error. SECIO doesn't
+		// have a secure termination message so we have no way to know
+		// if the connection was reset of if it was nicely terminated.
+		// We might as well just return an error.
+		//
+		// Notes:
+		//  1. In libp2p, we usually reset TCP connections anyways (set
+		//     linger to 0) so this won't cause any issues (except,
+		//     maybe, with tests).
+		//  2. The stream multiplexer supports _nice_ termination of streams.
+		//  3. All of our current protocols use length-prefixed
+		//     messages. None of them assume that streams are nicely
+		//     terminated with an EOF.
+		if err == io.EOF {
+			err = ErrReset
+		}
+		r.Unlock()
+	}()
 
 	// Return buffered data without reading more, if possible.
 	copied := r.drain(buf)
