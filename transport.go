@@ -14,12 +14,15 @@ import (
 // ID is secio's protocol ID (used when negotiating with multistream)
 const ID = "/secio/1.0.0"
 
-// SessionGenerator constructs secure communication sessions for a peer.
+// Deprecated: secio is now deprecated.
+// Use TLS 1.3 (https://github.com/libp2p/go-libp2p-tls/) and Noise (https://github.com/libp2p/go-libp2p-noise/) instead.
 type Transport struct {
 	LocalID    peer.ID
 	PrivateKey ci.PrivKey
 }
 
+// Deprecated: secio is now deprecated.
+// Use TLS 1.3 (https://github.com/libp2p/go-libp2p-tls/) and Noise (https://github.com/libp2p/go-libp2p-noise/) instead.
 func New(sk ci.PrivKey) (*Transport, error) {
 	id, err := peer.IDFromPrivateKey(sk)
 	if err != nil {
