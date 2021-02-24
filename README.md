@@ -1,3 +1,10 @@
+# DEPRECATION NOTICE
+
+secio is not maintained any more, and we advise against using it.
+
+Use [go-libp2p-tls](https://github.com/libp2p/go-libp2p-tls/) and [go-libp2p-noise](https://github.com/libp2p/go-libp2p-noise/) instead.
+
+
 # go-libp2p-secio
 
 [![](https://img.shields.io/badge/made%20by-Protocol%20Labs-blue.svg?style=flat-square)](https://protocol.ai)
